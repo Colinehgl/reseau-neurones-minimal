@@ -36,9 +36,9 @@ $(BUILD_DIR)/%.o: $(TEST_DIR)/%.c | $(BUILD_DIR)
 test: $(CORE_OBJS) $(TEST_OBJS)
 	@for test_obj in $(TEST_OBJS); do \
 		test_exe=$${test_obj%.o}; \
-		echo "🔹 Compilation du test: $$test_exe"; \
+		echo "-> Compilation du test: $$test_exe"; \
 		$(CC) $(CFLAGS) -o $$test_exe $$test_obj $(CORE_OBJS) $(LDFLAGS); \
-		echo "🚀 Exécution de $$test_exe"; \
+		echo " >>> Exécution de $$test_exe"; \
 		$$test_exe; \
 		echo ""; \
 	done

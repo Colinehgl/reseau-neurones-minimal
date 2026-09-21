@@ -77,6 +77,15 @@ Matrix matrix_add(Matrix a, Matrix b){
    return c;
 }
 
+Vector vector_add(Vector a, Vector b){
+   assert(a.dim = b.dim);   
+   Vector c = vector_create(a.dim);
+   for(int i = 0; i < a.dim; i++){
+      c.data[i] = a.data[i] + b.data[i];
+   }
+   return c;
+}
+
 Matrix matrix_hadamard(Matrix a, Matrix b){
    assert(a.rows == b.rows && a.cols == b.cols);   
    Matrix c = matrix_create(a.rows, a.cols);

@@ -22,6 +22,7 @@ void vector_free(Vector* v);
 Vector matrix_vec_mul(Matrix m, Vector v);
 Matrix matrix_transpose(Matrix m);
 Matrix matrix_add(Matrix a, Matrix b);
+Vector vector_add(Vector a, Vector b);
 Matrix matrix_hadamard(Matrix a, Matrix b);
 Matrix vector_to_matrix(Vector v);
 Vector matrix_to_vector(Matrix m);

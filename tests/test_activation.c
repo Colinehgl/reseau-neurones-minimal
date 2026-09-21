@@ -74,8 +74,8 @@ int main(void) {
     vector_free(&rpv);
     vector_free(&v);
 
-    /* --- versions Matrix : sigmoid  --- */
-    Matrix m = matrix_create(2, 2); 
+    /* --- versions Matrix : sigmoid sur une matrice de zeros 2x2 --- */
+    Matrix m = matrix_create(2, 2); /* deja a zero via matrix_create */
     Matrix sm = sigmoid_matrix(m);
     CHECK(sm.rows == 2 && sm.cols == 2, "sigmoid_matrix: dimensions preservees");
     CHECK(float_eq(sm.data[0], 0.5f) && float_eq(sm.data[3], 0.5f), "sigmoid_matrix: valeurs = 0.5");
@@ -95,7 +95,7 @@ int main(void) {
     matrix_free(&tpm);
     matrix_free(&m);
 
-    /* --- versions Matrix : relu s --- */
+    /* --- versions Matrix : relu sur des valeurs mixtes --- */
     Matrix m2 = matrix_create(2, 2);
     m2.data[0] = -1.0f; m2.data[1] = 3.0f; m2.data[2] = 0.0f; m2.data[3] = -5.0f;
 
@@ -111,6 +111,43 @@ int main(void) {
           "relu_prime_matrix: valeurs correctes");
     matrix_free(&rpm);
     matrix_free(&m2);
+
+    /* --- dispatch : activation_apply / activation_apply_prime --- */
+    Vector zd = vector_create(2);
+    zd.data[0] = 0.0f; zd.data[1] = 2.0f;
+
+    Vector d_sig = activation_apply(ACTIVATION_SIGMOID, zd);
+    CHECK(float_eq(d_sig.data[0], 0.5f) && float_eq(d_sig.data[1], 0.8807970f),
+          "activation_apply: SIGMOID coherent avec sigmoid_vector");
+    vector_free(&d_sig);
+
+    Vector d_sig_p = activation_apply_prime(ACTIVATION_SIGMOID, zd);
+    CHECK(float_eq(d_sig_p.data[0], 0.25f), "activation_apply_prime: SIGMOID coherent");
+    vector_free(&d_sig_p);
+
+    Vector d_tanh = activation_apply(ACTIVATION_TANH, zd);
+    CHECK(float_eq(d_tanh.data[0], 0.0f), "activation_apply: TANH coherent avec tanh_vector");
+    vector_free(&d_tanh);
+
+    Vector d_tanh_p = activation_apply_prime(ACTIVATION_TANH, zd);
+    CHECK(float_eq(d_tanh_p.data[0], 1.0f), "activation_apply_prime: TANH coherent");
+    vector_free(&d_tanh_p);
+
+    Vector zr = vector_create(2);
+    zr.data[0] = -3.0f; zr.data[1] = 5.0f;
+
+    Vector d_relu = activation_apply(ACTIVATION_RELU, zr);
+    CHECK(float_eq(d_relu.data[0], 0.0f) && float_eq(d_relu.data[1], 5.0f),
+          "activation_apply: RELU coherent avec relu_vector");
+    vector_free(&d_relu);
+
+    Vector d_relu_p = activation_apply_prime(ACTIVATION_RELU, zr);
+    CHECK(float_eq(d_relu_p.data[0], 0.0f) && float_eq(d_relu_p.data[1], 1.0f),
+          "activation_apply_prime: RELU coherent");
+    vector_free(&d_relu_p);
+
+    vector_free(&zd);
+    vector_free(&zr);
 
     printf("== %d/%d tests passes ==\n", tests_passed, tests_run);
     return (tests_passed == tests_run) ? 0 : 1;

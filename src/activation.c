@@ -1,5 +1,6 @@
 #include <math.h>
 #include "matrix.h"
+#include "activation.h"
 
 scalar_t sigmoid(scalar_t x){
     return 1/(1 + expf(-x));
@@ -131,4 +132,22 @@ Matrix relu_prime_matrix(Matrix m){
         }
     }
     return sm;
+}
+
+Vector activation_apply(ActivationType type, Vector z){
+    switch(type){
+        case ACTIVATION_SIGMOID: return sigmoid_vector(z);
+        case ACTIVATION_TANH:    return tanh_vector(z);
+        case ACTIVATION_RELU:    return relu_vector(z);
+    }
+    return vector_create(z.dim); /* ne devrait jamais arriver si type est valide */
+}
+
+Vector activation_apply_prime(ActivationType type, Vector z){
+    switch(type){
+        case ACTIVATION_SIGMOID: return sigmoid_prime_vector(z);
+        case ACTIVATION_TANH:    return tanh_prime_vector(z);
+        case ACTIVATION_RELU:    return relu_prime_vector(z);
+    }
+    return vector_create(z.dim);
 }

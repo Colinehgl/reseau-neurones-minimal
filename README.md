@@ -2,7 +2,7 @@
 
 ### Objectif
 
-Construire un **MLP (perceptron multicouche)** entièrement depuis zéro, en C, sans aucune bibliothèque externe — juste `stdlib`, `math.h` pour les fonctions élémentaires (`expf`, `tanhf`), et tes propres boucles pour tout le reste : algèbre linéaire, activations, forward, backward, entraînement. L'idée est de comprendre mécaniquement chaque rouage d'un réseau de neurones, sans la magie d'un framework.
+Construire un **MLP (perceptron multicouche)** entièrement depuis zéro, en C, sans aucune bibliothèque externe — juste `stdlib`, `math.h` pour les fonctions élémentaires (`expf`, `tanhf`). L'idée est de comprendre mécaniquement chaque rouage d'un réseau de neurones, sans la magie d'un framework.
 
 ### Choix structurants posés au départ
 

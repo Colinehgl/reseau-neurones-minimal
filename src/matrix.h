@@ -24,7 +24,10 @@ Matrix matrix_transpose(Matrix m);
 Matrix matrix_add(Matrix a, Matrix b);
 Vector vector_add(Vector a, Vector b);
 Matrix matrix_hadamard(Matrix a, Matrix b);
+Vector vector_hadamard(Vector a, Vector b);
+Matrix  matrix_outer_product(Vector a, Vector b);
 Matrix vector_to_matrix(Vector v);
 Vector matrix_to_vector(Matrix m);
+
 
 #endif

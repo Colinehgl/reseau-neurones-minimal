@@ -78,7 +78,7 @@ Matrix matrix_add(Matrix a, Matrix b){
 }
 
 Vector vector_add(Vector a, Vector b){
-   assert(a.dim = b.dim);   
+   assert(a.dim == b.dim);   
    Vector c = vector_create(a.dim);
    for(int i = 0; i < a.dim; i++){
       c.data[i] = a.data[i] + b.data[i];
@@ -97,6 +97,28 @@ Matrix matrix_hadamard(Matrix a, Matrix b){
    return c;
 }
 
+Vector vector_hadamard(Vector a, Vector b){
+   assert(a.dim == b.dim);   
+   Vector c = vector_create(a.dim);
+   for(int i = 0; i < a.dim; i++){
+         c.data[i] = a.data[i] * b.data[i];
+   }
+   return c;
+}
+
+Matrix  matrix_outer_product(Vector a, Vector b){
+   /* constuit une matrice à partir de 2 vecteurs,
+    * en suivant une multiplication respetive des
+    * coefficients */
+   Matrix m = matrix_create(a.dim,b.dim);
+   for(int i = 0; i < a.dim; i++){
+      for(int j = 0; j < b.dim; j++){
+         m.data[i*b.dim+j] = a.data[i] * b.data[j];
+      }
+   }
+   return m;
+}
+
 Matrix vector_to_matrix(Vector v){
    Matrix m = matrix_create(v.dim,1);
    for(int i = 0; i < v.dim; i++){
@@ -106,7 +128,7 @@ Matrix vector_to_matrix(Vector v){
 }
 
 Vector matrix_to_vector(Matrix m){
-   assert(m.cols = 1);
+   assert(m.cols == 1);
    Vector v = vector_create(m.rows);
    for(int i = 0; i < m.rows; i++){
       v.data[i] = m.data[i];

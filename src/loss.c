@@ -1,3 +1,4 @@
+#include "loss.h"
 #include "matrix.h"
 #include <math.h>
 #include <assert.h>

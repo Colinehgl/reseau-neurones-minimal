@@ -2,7 +2,7 @@
 
 ### Objectif
 
-Construire un **MLP (perceptron multicouche)** entièrement depuis zéro, en C, sans aucune bibliothèque externe — juste `stdlib`, `math.h` pour les fonctions élémentaires (`expf`, `tanhf`). L'idée est de comprendre mécaniquement chaque rouage d'un réseau de neurones, sans la magie d'un framework.
+Construire un **MLP (perceptron multicouche)** entièrement depuis zéro, en C, sans aucune bibliothèque externe — juste `stdlib`, `math.h` pour les fonctions élémentaires (`expf`, `tanhf`, `logf`). L'idée est de comprendre mécaniquement chaque rouage d'un réseau de neurones, sans la magie d'un framework.
 
 ### Choix structurants posés au départ
 
@@ -22,11 +22,22 @@ Construire un **MLP (perceptron multicouche)** entièrement depuis zéro, en C, 
 
 **`layer.c` / `layer.h`** — terminé, tous les tests passent. Le type `Layer` (poids `W`, biais `b`, gradients `dW`/`db`, activation) et `LayerCache` (`z`, `a`, `delta`) sont en place. Fonctions : `layer_create`, `layer_free`, `layer_zero_grad`, `layer_init_weights` (Xavier), `layer_forward`, `layer_backward_output` (couche de sortie, point de départ de la backprop), `layer_backward_hidden` (couches cachées, propage le delta via `next_W`), `layer_cache_create`, `layer_cache_free`.
 
-### Ce qu'il reste à faire
+**`loss.c` / `loss.h`** — terminé, tous les tests passent. `mse_loss`/`mse_loss_prime` et `cross_entropy_loss`/`cross_entropy_loss_prime` — fournissent le `loss_grad` qui amorce la rétropropagation à la couche de sortie.
 
-1. **`loss.c` / `loss.h`** — MSE (et éventuellement cross-entropy pour de la classification), avec leurs dérivées ; c'est ce qui fournira le `loss_grad` dont `layer_backward_output` a besoin
-2. **`mlp.c` / `mlp.h`** — assembler plusieurs `Layer` en un réseau complet : `mlp_create`, `mlp_forward` (enchaîne les couches, garde toutes les `LayerCache`), `mlp_backward` (parcourt les couches à l'envers, appelle `layer_backward_output` puis `layer_backward_hidden` en cascade)
-3. **`train.c` / `train.h`** — la boucle d'epochs, la mise à jour SGD des poids à partir de `dW`/`db`, l'affichage de la loss
-4. **`dataset.c` / `dataset.h`** — commencer par XOR en dur (4 exemples), prévoir la structure pour charger MNIST plus tard
-5. **`main.c`** — assembler le tout : dataset, réseau, entraînement, affichage des résultats
-6. **`tests/test_gradient_check.c`** — comparer le gradient analytique de la backprop à une approximation par différence finie, pour détecter tout bug de calcul de gradient qui aurait échappé aux tests unitaires
+**`mlp.c` / `mlp.h`** — terminé, tous les tests passent. Le type `MLP` assemble plusieurs `Layer` et `LayerCache` en un réseau complet : `mlp_create`, `mlp_free`, `mlp_forward` (enchaîne les couches), `mlp_backward` (parcourt les couches à l'envers, propage `prev_a` et `delta` correctement d'une couche à l'autre), `mlp_zero_grad`.
+
+**`train.c` / `train.h`** — terminé, tous les tests passent. `sgd_update` (descente de gradient : `W -= lr*dW`, `b -= lr*db`) et `train_epoch` (une passe complète sur un dataset : zero_grad, forward, loss_grad, backward, update, pour chaque exemple).
+
+**`dataset.c` / `main.c`** — terminé. Dataset XOR codé en dur (4 exemples), assemblage complet dans `main.c` (réseau `{2,4,1}`, 10000 epochs, `lr=0.5`). **Premier entraînement de bout en bout réussi** : loss descendue de 0.25 à 0.00014, les 4 sorties XOR correctement apprises (0/1/1/0 attendus, sorties obtenues ≈ 0.011/0.989/0.989/0.012).
+
+**`tests/test_gradient_check.c`** — terminé, tous les gradients cohérents. Compare le gradient analytique de `mlp_backward` (`dW`/`db`) à une approximation par différence finie centrée ($\epsilon=10^{-3}$) sur un réseau `{2,3,1}` : les 13 poids/biais vérifiés un par un concordent (tolérance relative 5%, avec un repli sur une tolérance absolue quand les deux valeurs sont déjà quasi nulles). Confirme que la backprop est mathématiquement correcte de bout en bout, indépendamment des tests unitaires précédents.
+
+### Le projet est fonctionnellement complet
+
+Toutes les briques prévues au départ sont écrites et validées : algèbre linéaire, activations, couche (forward/backward), loss, assemblage réseau, entraînement SGD, et vérification indépendante du gradient. Le MLP apprend XOR de bout en bout et sa backprop est confirmée correcte par gradient checking.
+
+### Pistes d'extension, une fois le gradient checking fait
+
+- Passer sur MNIST plutôt que XOR (nécessite un vrai chargeur de fichier binaire dans `dataset.c`, et sentir la limite de performance des boucles naïves sans BLAS)
+- Mini-batch au lieu de SGD par exemple isolé
+- Sauvegarde/chargement des poids sur disque

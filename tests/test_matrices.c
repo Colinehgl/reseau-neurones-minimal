@@ -2,11 +2,6 @@
 #include <math.h>
 #include "matrix.h"
 
-/* Suppose les signatures corrigées :
- *   void matrix_free(Matrix *m);
- *   void vector_free(Vector *v);
- *   Vector matrix_vec_mul(Matrix m, Vector v);   (renommé depuis matrix_vex_mul)
- * Adapte les appels si tu gardes d'autres noms/signatures. */
 
 static int tests_run = 0;
 static int tests_passed = 0;
